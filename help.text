@@ -1,0 +1,13 @@
+================ SHELL-DO-YURY HELP ================
+
+cd <diretorio>     Muda o diretorio atual
+cd ~               Vai para a HOME
+cd ..              Muda para o diretorio Pai
+clear              Limpa o terminal
+pwd                Mostra o diretorio atual
+mkdir <nome>       Cria uma pasta no Diretorio atual
+delete <nome>      Deleta diretorio completo(arquivos,etc) 
+help               Mostra esta mensagem
+exit               Fecha o Shell-do-yury
+
+====================================================
