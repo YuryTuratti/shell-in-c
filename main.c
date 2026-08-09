@@ -19,7 +19,7 @@ int main(void){
         comando[strcspn(comando,"\n")] = '\0';
         
         div_args(comando,args);
-        enterpretador(args,home);
+        enterpretador(args,home,caminho_original);
     }
 
     return 0;

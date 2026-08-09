@@ -102,9 +102,13 @@ void limpar_shell(){
 
 //---------------------------------------------------------//
 
-void mostrar_help(){
+void mostrar_help(char *caminho_original){
 
-    FILE *arquivo = fopen("help.text", "r");
+    char caminho_help[TAMANHO_PATH];
+    
+    snprintf(caminho_help, sizeof(caminho_help),"%s/help.text",caminho_original);
+    
+    FILE *arquivo = fopen(caminho_help, "r");
 
     if(arquivo == NULL){
         printf("Erro ao abrir o arquivo de ajuda\n");
@@ -144,7 +148,7 @@ void apagar_arquivo(char *nome){
 
 //---------------------------------------------------------//
 
-void enterpretador(char *args[],char *home){
+void enterpretador(char *args[],char *home,char *caminho_original){
 
     if(args[0] == NULL)
         return;
@@ -187,7 +191,7 @@ void enterpretador(char *args[],char *home){
     }
     else if(strcmp(args[0], "help") == 0){
         if(args[1] == NULL){
-            mostrar_help();
+            mostrar_help(caminho_original);
         }
         else{
             printf("Argumento nao permitido\n");
