@@ -148,6 +148,62 @@ void apagar_arquivo(char *nome){
 
 //---------------------------------------------------------//
 
+void listar_diretorio(bool mostrar_ocultos){
+    #ifdef _WIN32 
+
+        WIN32_FIND_DATA dados;
+        HANDLE dir = FindFirstFile("*", &dados);
+
+        if (dir == INVALID_HANDLE_VALUE) {
+            printf("Erro ao abrir diretorio\n");
+            return;
+        }
+
+        do {
+
+            if (!mostrar_ocultos) {
+                // Modificação aqui: Oculta se tiver a flag do Windows OU se começar com ponto
+                if ((dados.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) || dados.cFileName[0] == '.'){
+                    continue;
+                }
+            }
+            
+            printf("%s\n", dados.cFileName);        
+        } while (FindNextFile(dir, &dados));
+
+        FindClose(dir);
+
+
+        #else
+
+            if(!mostrar_ocultos){
+                DIR *dir = opendir(".");
+
+                if(dir == NULL){
+                    printf("Erro ao abrir diretorio\n");
+                    return;
+                }
+
+                struct dirent *entrada;
+
+                while((entrada = readdir(dir)) != NULL){
+
+                    if(!mostrar_ocultos && entrada->d_name[0] == '.'){
+                        continue;
+                    }
+
+                    printf("%s\n", entrada->d_name);
+                }
+                closedir(dir);
+            }
+
+
+    #endif 
+}
+
+
+//---------------------------------------------------------//
+
 void enterpretador(char *args[],char *home,char *caminho_original){
 
     if(args[0] == NULL)
@@ -228,6 +284,17 @@ void enterpretador(char *args[],char *home,char *caminho_original){
     else if(strcmp(args[0], "delete") == 0){
         if(args[1] != NULL && args[2] == NULL){
             apagar_arquivo(args[1]);
+        }
+        else{
+            printf("Argumento nao permitido\n");
+        }
+    }
+    else if(strcmp(args[0],"ls") == 0){
+        if(args[1] == NULL){
+            listar_diretorio(false);
+        }
+        else if(strcmp(args[1], "-la") == 0 && args[2] == NULL){
+            listar_diretorio(true);
         }
         else{
             printf("Argumento nao permitido\n");
