@@ -13,7 +13,7 @@ int main(void){
     buscar_home(&home);// Buscando a home do usuário
 
     while(1){
-        printf("shell-do-yury >");
+        printf("\033[32mshell-do-yury\033[0m >");
 
         fgets(comando, 1024, stdin);
         comando[strcspn(comando,"\n")] = '\0';

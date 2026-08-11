@@ -118,7 +118,7 @@ void mostrar_help(char *caminho_original){
     char linha[256];
 
     while(fgets(linha, sizeof(linha), arquivo) != NULL){
-        printf("%s", linha);
+        printf("\033[36m%s\033[0m", linha);
     }
     printf("\n");
     fclose(arquivo);
@@ -155,24 +155,21 @@ void listar_diretorio(bool mostrar_ocultos){
         HANDLE dir = FindFirstFile("*", &dados);
 
         if (dir == INVALID_HANDLE_VALUE) {
-            printf("Erro ao abrir diretorio\n");
+            printf("\033[31mErro ao abrir diretorio\033[0m\n");
             return;
         }
-
         do {
 
             if (!mostrar_ocultos) {
-                // Modificação aqui: Oculta se tiver a flag do Windows OU se começar com ponto
+
                 if ((dados.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) || dados.cFileName[0] == '.'){
                     continue;
                 }
             }
-            
             printf("%s\n", dados.cFileName);        
         } while (FindNextFile(dir, &dados));
 
         FindClose(dir);
-
 
         #else
 
@@ -180,7 +177,7 @@ void listar_diretorio(bool mostrar_ocultos){
                 DIR *dir = opendir(".");
 
                 if(dir == NULL){
-                    printf("Erro ao abrir diretorio\n");
+                    printf("\033[31mErro ao abrir diretorio\033[0m\n");
                     return;
                 }
 
@@ -191,7 +188,6 @@ void listar_diretorio(bool mostrar_ocultos){
                     if(!mostrar_ocultos && entrada->d_name[0] == '.'){
                         continue;
                     }
-
                     printf("%s\n", entrada->d_name);
                 }
                 closedir(dir);
@@ -219,19 +215,19 @@ void enterpretador(char *args[],char *home,char *caminho_original){
                     printf("Diretorio alterado para a home com sucesso!\n");
                 }
                 else{
-                    printf("Erro ao tentar ir para a Home!\n");
+                    printf("\033[31mErro ao tentar ir para a Home!\033[0m\n");
                 }
             }
             else if(CHANGE_DIR(args[1]) == 0){
                 printf("Diretorio alterado com sucesso!\n");
             }
             else{
-                printf("Erro ao tentar alterar o diretorio\n");
+                printf("\033[31mErro ao tentar alterar o diretorio\033[0m\n");
             }
         }    
         //entra somente se ele tiver passado outro argumento ou diretorio errado
         else{
-            printf("Argumento nao permitido\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
         }
         return;
     }
@@ -241,7 +237,7 @@ void enterpretador(char *args[],char *home,char *caminho_original){
             limpar_shell();
         }
         else{
-            printf("Argumentos nao permitidos\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
             return;
         }
     }
@@ -250,7 +246,7 @@ void enterpretador(char *args[],char *home,char *caminho_original){
             mostrar_help(caminho_original);
         }
         else{
-            printf("Argumento nao permitido\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
         }
     }
     else if(strcmp(args[0], "pwd") == 0){
@@ -258,15 +254,15 @@ void enterpretador(char *args[],char *home,char *caminho_original){
             mostrar_pwd();
         }
         else{
-            printf("Argumento nao permitido\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
         }
     }
     else if(strcmp(args[0], "mkdir") == 0){
         if(args[1] == NULL){
-            printf("De um nome para o diretorio\n");
+            printf("\033[33mDe um nome para o diretorio\033[0m\n");
         }
         else if(args[2] != NULL){
-            printf("Argumento nao permitiro\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
         }
         else{
             criar_pasta(args[1]);
@@ -278,7 +274,8 @@ void enterpretador(char *args[],char *home,char *caminho_original){
             exit(0);
         }
         else{
-            printf("Argumento nao permitido\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
+
         }
     }
     else if(strcmp(args[0], "delete") == 0){
@@ -286,7 +283,7 @@ void enterpretador(char *args[],char *home,char *caminho_original){
             apagar_arquivo(args[1]);
         }
         else{
-            printf("Argumento nao permitido\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
         }
     }
     else if(strcmp(args[0],"ls") == 0){
@@ -297,11 +294,11 @@ void enterpretador(char *args[],char *home,char *caminho_original){
             listar_diretorio(true);
         }
         else{
-            printf("Argumento nao permitido\n");
+            printf("\033[31mArgumento nao permitido\033[0m\n");
         }
     }
 
     else{
-        printf("\n'%s' nao eh um argumento nativo no shell-do-yury, se houver duvidas use o comadando help\n\n",args[0]);
+        printf("\n\033[31m'%s' nao eh um argumento nativo no shell-do-yury, se houver duvidas use o comadando help\033[0m\n\n",args[0]);
     }
 }

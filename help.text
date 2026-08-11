@@ -7,6 +7,8 @@ clear              Limpa o terminal
 pwd                Mostra o diretorio atual
 mkdir <nome>       Cria uma pasta no Diretorio atual
 delete <nome>      Deleta diretorio completo(arquivos,etc) 
+ls                 Listar arquivos do diretorio atual
+ls -la             Listar aquivos ocultos
 help               Mostra esta mensagem
 exit               Fecha o Shell-do-yury
 
