@@ -6,7 +6,8 @@ cd ..              Muda para o diretorio Pai
 clear              Limpa o terminal
 pwd                Mostra o diretorio atual
 mkdir <nome>       Cria uma pasta no Diretorio atual
-delete <nome>      Deleta diretorio completo(arquivos,etc) 
+delete <nome>      Deleta diretorio completo(arquivos,etc)
+rm <nome>          Deleta arquivos('main.c','teste.py',etc)
 ls                 Listar arquivos do diretorio atual
 ls -la             Listar aquivos ocultos
 help               Mostra esta mensagem
