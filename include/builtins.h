@@ -1,9 +1,9 @@
 int buscar_home(char **caminho);
-void builtins_init();
+void builtins_init(void);
 int executar_builtins(char *args[]);
 void builtins_cd(char *args[]);
 void builtins_ls(char *args[]);
-void cmd_cd(char *args[], char *home);
+void cmd_cd(char *args[]);
 void cmd_pwd(char *args[]);
 void cmd_clear(char *args[]);
 void cmd_help(char *args[]);

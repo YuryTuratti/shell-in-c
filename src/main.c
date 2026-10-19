@@ -13,8 +13,8 @@ int main(void){
     char *args[MAX_ARGS];
     char *home = NULL;
 
-    builtins_init();// salvando o caminho original
     buscar_home(&home);
+    builtins_init();// salvando o caminho original
 
     while(1){
         printf("\033[32mshell-do-yury\033[0m >");

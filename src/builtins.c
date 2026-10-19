@@ -35,7 +35,7 @@
 
 #endif
 
-static char *home_global;
+static char home_global[TAMANHO_PATH];
 
 typedef struct {
     char *nome;
@@ -44,6 +44,7 @@ typedef struct {
 
 static Comando comandos[] = {
     {"help",cmd_help},
+    {"cd",cmd_cd},
     {"pwd",cmd_pwd},
     {"mkdir",cmd_mkdir},
     {"ls",cmd_ls},
@@ -88,12 +89,13 @@ int buscar_home(char **caminho){
     }
     // copia do caminho para a memória recem alocada
     strcpy(*caminho,env_home);
+
     return 1;
 }
 
 //---------------------------------------------------------//
 
-void builtins_init(){
+void builtins_init(void){
    
     //getcwd(buffer, tamanho): Copia o caminho do diretório de trabalho atual para dentro do buffer.
     if(GET_CURRENT_DIR(home_global, TAMANHO_PATH) != NULL)
@@ -104,7 +106,7 @@ void builtins_init(){
 
 //---------------------------------------------------------//
 
-void cmd_cd(char *args[], char *home){
+void cmd_cd(char *args[]){
 
     if(strcmp(args[0], "cd") == 0){
 
@@ -112,7 +114,7 @@ void cmd_cd(char *args[], char *home){
         if(args[1] != NULL && args[2] == NULL){
             
             if(strcmp(args[1], "~") == 0){
-                if(CHANGE_DIR(home) == 0){
+                if(CHANGE_DIR(home_global) == 0){
                     printf("Diretorio alterado para a home com sucesso!\n");
                 }
                 else{
@@ -203,7 +205,7 @@ void cmd_mkdir(char *args[]){
         return;
     }
     else if(args[2] != NULL){
-        printf("\033[31Argumento nao permitido\033[0m\n");
+        printf("\033[31mArgumento nao permitido\033[0m\n");
         return;
     }
     else{
@@ -256,7 +258,7 @@ void cmd_ls(char *args[]){
 
     bool mostrar_ocultos = false;
 
-    if(args[1] != NULL && strcmp(args[1],"-la")){
+    if(args[1] != NULL && strcmp(args[1],"-la") == 0){
         mostrar_ocultos = true;
     }
 
