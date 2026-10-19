@@ -1,0 +1,1 @@
+void cmd_externo(char *args[]);

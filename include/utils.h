@@ -1,0 +1,1 @@
+void div_args(char comando[], char *args[]);

@@ -1,0 +1,1 @@
+void enterpretador(char *args[],char *home);

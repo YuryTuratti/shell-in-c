@@ -1,33 +1,70 @@
-#include "shell.h"
+#include "../include/builtins.h"
+#include "../include/enterpretador.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
 #define TAMANHO_PATH 1024
 #define MAX_ARGS 64
 
-//---------------------------------------------------------//
-
-// descobrir qual é o sistema operacional do usuário
 #if defined(_WIN32) || defined(_WIN64)
+
     #include <direct.h>
-    #include <windows.h>    
+    #include <windows.h>
+
     #define ENV_HOME "USERPROFILE"
     #define GET_CURRENT_DIR(buffer, size) _getcwd(buffer, size)
-    #define CREATE_DIR(path) _mkdir(pasth)
+    #define CREATE_DIR(path) _mkdir(path)
     #define CHANGE_DIR(path) _chdir(path)
     #define DELETE_DIR(path) _rmdir(path)
-    #define DELETE_FILE "rm \"%s\""
     #define CLEAR_SHELL "cls"
+
 #else
+
+    #include <unistd.h>
     #include <dirent.h>
+    #include <sys/stat.h>
+
     #define ENV_HOME "HOME"
     #define GET_CURRENT_DIR(buffer, size) getcwd(buffer, size)
     #define CHANGE_DIR(path) chdir(path)
-    #define CREATE_DIR(path) mkdir(path,0755)
+    #define CREATE_DIR(path) mkdir(path, 0755)
     #define DELETE_DIR(path) rmdir(path)
-    #define DELETE_FILE "rm \"%s\""
     #define CLEAR_SHELL "clear"
+
 #endif
 
-//---------------------------------------------------------//
+static char *home_global;
+
+typedef struct {
+    char *nome;
+    void (*funcao)(char *args[]);
+}Comando;
+
+static Comando comandos[] = {
+    {"help",cmd_help},
+    {"pwd",cmd_pwd},
+    {"mkdir",cmd_mkdir},
+    {"ls",cmd_ls},
+    {"exit",cmd_exit},
+    {"clear",cmd_clear},
+    {"delete",cmd_delete}
+};
+
+int executar_builtins(char *args[]){
+    
+    int total = sizeof(comandos) / sizeof(comandos[0]);
+
+    for (int i = 0; i < total; i++) {
+        if (strcmp(args[0], comandos[i].nome) == 0) {
+            comandos[i].funcao(args);
+            return 1;
+        }
+    }
+
+    return 0;
+}
 
 int buscar_home(char **caminho){
 
@@ -56,11 +93,11 @@ int buscar_home(char **caminho){
 
 //---------------------------------------------------------//
 
-void salvar_caminho_orig(char caminho_original[]){
+void builtins_init(){
    
     //getcwd(buffer, tamanho): Copia o caminho do diretório de trabalho atual para dentro do buffer.
-    if(GET_CURRENT_DIR(caminho_original, TAMANHO_PATH) != NULL)
-        printf("caminho original : %s\n", caminho_original);
+    if(GET_CURRENT_DIR(home_global, TAMANHO_PATH) != NULL)
+        printf("caminho original : %s\n", home_global);
     else 
         printf("Erro ao salvar o caminho original\n");
 }
@@ -119,26 +156,6 @@ void cmd_pwd(char *args[]){
 
 //---------------------------------------------------------//
 
-void div_args(char comando[], char *args[]){
-    
-    char* token;
-    int i = 0;
-    
-    token = strtok(comando, " \n");
-    
-    while(token != NULL && i < MAX_ARGS - 1){
-        args[i] = token;
-        i++;
-
-        token = strtok(NULL, " \n");
-    }
-
-    args[i] = NULL;
-
-}
-
-//---------------------------------------------------------//
-
 void cmd_clear(char *args[]){
     if(args[1] == NULL){
         system(CLEAR_SHELL);
@@ -149,7 +166,7 @@ void cmd_clear(char *args[]){
 }
 //---------------------------------------------------------//
 
-void cmd_help(char *caminho_original,char *args[]){
+void cmd_help(char *args[]){
 
     if(args[1] != NULL){
         printf("\033[31mArgumento nao permitido\033[0m\n");
@@ -158,7 +175,7 @@ void cmd_help(char *caminho_original,char *args[]){
     else{
         char caminho_help[TAMANHO_PATH];
         
-        snprintf(caminho_help, sizeof(caminho_help),"%s/help.text",caminho_original);
+        strcpy(caminho_help,"../docs/help.txt");
         
         FILE *arquivo = fopen(caminho_help, "r");
 
@@ -235,7 +252,14 @@ void cmd_delete(char *args[]){
 
 //---------------------------------------------------------//
 
-void cmd_ls(bool mostrar_ocultos){
+void cmd_ls(char *args[]){
+
+    bool mostrar_ocultos = false;
+
+    if(args[1] != NULL && strcmp(args[1],"-la")){
+        mostrar_ocultos = true;
+    }
+
     #ifdef _WIN32 
 
         WIN32_FIND_DATA dados;
@@ -281,55 +305,4 @@ void cmd_ls(bool mostrar_ocultos){
 
 
     #endif 
-}
-
-void cmd_externo(char *args[]){
-    
-    printf("teste\n");
-    return;
-}
-
-//---------------------------------------------------------//
-
-void enterpretador(char *args[],char *home,char *caminho_original){
-
-    if(args[0] == NULL)
-        return;
-    
-    if(strcmp(args[0], "cd") == 0){
-        cmd_cd(args,home);
-    }
-    else if(strcmp(args[0], "clear") == 0){
-        cmd_clear(args);
-    }
-    else if(strcmp(args[0], "help") == 0){
-        cmd_help(caminho_original,args);
-    }
-    else if(strcmp(args[0], "pwd") == 0){
-        cmd_pwd(args);
-    }
-    else if(strcmp(args[0], "mkdir") == 0){
-       cmd_mkdir(args);
-    }
-    else if(strcmp(args[0], "exit") == 0){
-        cmd_exit(args);
-    }
-    else if(strcmp(args[0], "delete") == 0){
-        cmd_delete(args);
-    }
-    else if(strcmp(args[0],"ls") == 0){
-        if(args[1] == NULL){
-            cmd_ls(false);
-        }
-        else if(strcmp(args[1], "-la") == 0 && args[2] == NULL){
-            cmd_ls(true);
-        }
-        else{
-            printf("\033[31mArgumento nao permitido\033[0m\n");
-        }
-    }
-
-    else{
-        cmd_externo(args);
-    }
 }
